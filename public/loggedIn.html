@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Welcome</title>
+  </head>
+
+<script src="https://www.gstatic.com/firebasejs/5.9.2/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBvLvgjqeKw8R0juoj3adwtqSSJ7BoHVn4",
+    authDomain: "large-project-spring-2019.firebaseapp.com",
+    databaseURL: "https://large-project-spring-2019.firebaseio.com",
+    projectId: "large-project-spring-2019",
+    storageBucket: "large-project-spring-2019.appspot.com",
+    messagingSenderId: "495602203108"
+  };
+  firebase.initializeApp(config);
+</script>
+
+
+  <body>
+    <!-- firebase.auth().signOut(); to sign out-->
+    <script>
+    firebase.auth().onAuthStateChanged(function(user) {
+      if(user) {
+        document.body.innerHTML = '<h1> Welcome ' + user.displayName + ' to D2D</h1>';
+      } else {
+        console.log("no user signed in");
+      }
+    });
+    </script>
+  </body>
+</html>
