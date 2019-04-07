@@ -30,6 +30,11 @@
       firebase.auth.GoogleAuthProvider.PROVIDER_ID,
       firebase.auth.EmailAuthProvider.PROVIDER_ID
     ],
+    tosUrl: '<your-tos-url>',
+        // Privacy policy url/callback.
+        privacyPolicyUrl: function() {
+          window.location.assign('<your-privacy-policy-url>');
+        }
   };
 
   // Initialize the FirebaseUI Widget using Firebase.
@@ -39,11 +44,16 @@
 </script>
 
   <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">D2D</a>
+      <a class="nav-link" href="#">Download Link</a>
+    </nav>
+
     <div class="container">
-      <h1 align="center">HELLO, Welcome to D2D</h1>
+      <!-- <h1 align="center">HELLO, Welcome to D2D</h1> -->
       <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-3">
+        <div class="col-md-3"></div>
+        <div class="col-md-2">
           <!-- Here is where the screenshots will go -->
           <div id="screenshotCarousel" class="carousel slide" data-ride="carousel">
             <div class="carousel-inner" style="width:270px;height:480px;">
@@ -63,6 +73,21 @@
         <div class="col-md-7" id="firebaseui-auth-container"></div>
       </div>
     </div>
+
+    <footer class="pt-2 pb-1 mt-4 border-top bg-light">
+      <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-3">
+          <a href="#">About Us</a>
+        </div>
+        <div class="col-md-3">
+          <a href="#">Contact Us</a>
+        </div>
+        <div class="col-md-3">
+          <a href="#">Tools We Used</a>
+        </div>
+      </div>
+    </footer>
 
 
     <script src="app.js"></script>
