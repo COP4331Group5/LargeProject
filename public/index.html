@@ -28,6 +28,7 @@
     signInSuccessUrl: 'loggedIn.html',
     signInOptions: [
       firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+      firebase.auth.GithubAuthProvider.PROVIDER_ID,
       firebase.auth.EmailAuthProvider.PROVIDER_ID
     ],
     tosUrl: '<your-tos-url>',
@@ -45,12 +46,11 @@
 
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">D2D</a>
+      <a class="navbar-brand pl-4" href="/">D2D</a>
       <a class="nav-link" href="#">Download Link</a>
     </nav>
 
     <div class="container mt-2">
-      <!-- <h1 align="center">HELLO, Welcome to D2D</h1> -->
       <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-2">
@@ -74,17 +74,19 @@
       </div>
     </div>
 
-    <footer class="pt-2 pb-1 mt-4 border-top bg-light">
-      <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-3">
-          <a href="#">About Us</a>
-        </div>
-        <div class="col-md-3">
-          <a href="#">Contact Us</a>
-        </div>
-        <div class="col-md-3">
-          <a href="#">Tools We Used</a>
+    <footer class="pt-2 mt-4 border-top bg-light">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-2"></div>
+          <div class="col-md-3">
+            <a href="#">About Us</a>
+          </div>
+          <div class="col-md-3">
+            <a href="#">Contact Us</a>
+          </div>
+          <div class="col-md-3">
+            <a href="#">Tools We Used</a>
+          </div>
         </div>
       </div>
     </footer>
