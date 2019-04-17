@@ -49,9 +49,7 @@
       <a class="navbar-brand pl-4" href="/">D2D</a>
       <a class="nav-link" href="#" download>Download Link</a>
     </nav>
-    <div class="">
-
-    </div>
+    
     <div class="container mt-2">
       <div class="row">
         <div class="col-md-3"></div>
@@ -95,7 +93,7 @@
 
     <script>
         // body element, base element, midi file, if started.
-        var body = document.getElementsByTagName("div")[0], el, midi, started;
+        var body = document.getElementsByTagName("body")[0], el, midi, started;
 
         /**
          * Create a new element to fall to the bottom of the screen and set a timeout to make another!
@@ -164,6 +162,16 @@
             }
         }
     </script>
+    <style>
+    .falling {
+        position: fixed;
+        top: 0;
+        width: 2.5em;
+        pointer-events: none;
+        z-index: 99990
+    }
+</style>
+
 
     <!-- <script src="app.js"></script> -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
