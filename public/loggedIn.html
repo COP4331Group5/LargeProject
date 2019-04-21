@@ -26,6 +26,36 @@
     firebase.auth().onAuthStateChanged(function(user) {
       if(user) {
         document.body.innerHTML = '<h1> Welcome ' + user.displayName + ' to D2D</h1>';
+
+        // Sets the database reference to point to root of database
+        var database = firebase.database();
+
+/*        FakeAuthClient.UserProperty = {
+            DISPLAY_NAME: 'displayName',
+            EMAIL: 'email',
+            EMAIL_VERIFIED: 'emailVerified',
+            IS_ANONYMOUS: 'isAnonymous',
+            PHONE_NUMBER: 'phoneNumber',
+            PHOTO_URL: 'photoURL',
+            PROVIDER_DATA: 'providerData',
+            PROVIDER_ID: 'providerId',
+            REFRESH_TOKEN: 'refreshToken',
+            UID: 'uid'
+        };
+*/
+        // Create simple user from info passes from firebase auth
+        function writeUserdata(userID, name, email) {
+            database.ref('Users/' + userID).set({
+                username: name,
+                email: email
+                // Shouldn't have to store passwords as firebase auth handles everything, including salts and hashes
+                // password: password
+            });
+        }
+
+        // Call writeUserdata function and pass arguments from auth to write to database
+        writeUserdata(user.uid, user.displayName, user.email);
+        
       } else {
         console.log("no user signed in");
       }
