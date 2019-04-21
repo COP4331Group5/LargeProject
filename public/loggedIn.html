@@ -37,7 +37,7 @@
         docRef.get().then(function(doc) {
           if (doc.exists) {
             console.log("Document data:", doc.data());
-            const u Data = doc.data();
+            const uData = doc.data();
             document.getElementById("hello").innerHTML = uData.plan;
           } else {
             // doc.data() will be undefined in this case
@@ -53,5 +53,13 @@
     </script>
     <div id="welcome"></div>
     <h2>Hello, your plan is <span id="hello"></span> </h2>
+    <div class="row">
+      <div class="col-md-4">
+        
+      </div>
+      <div class="col-md-8">
+
+      </div>
+    </div>
   </body>
 </html>
