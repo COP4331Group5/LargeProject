@@ -2,7 +2,9 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <title>Welcome</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   </head>
 
 <script src="https://www.gstatic.com/firebasejs/5.9.2/firebase.js"></script>
@@ -21,13 +23,18 @@
 
 
   <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand pl-4" href="/">D2D</a>
+      <a class="nav-link" href="#" download>Download Link</a>
+    </nav>
     <!-- firebase.auth().signOut(); to sign out-->
     <script>
     firebase.auth().onAuthStateChanged(function(user) {
       if(user) {
-        document.body.innerHTML = '<h1> Welcome ' + user.displayName + ' to D2D</h1>';
+        var firestore = firebase.firestore();
+        const docRef = firestore.collection("Users").doc(user.uid);
 
-        // Sets the database reference to point to root of database
+
         var database = firebase.database();
 
 /*        FakeAuthClient.UserProperty = {
@@ -55,11 +62,144 @@
 
         // Call writeUserdata function and pass arguments from auth to write to database
         writeUserdata(user.uid, user.displayName, user.email);
+
         
+        document.getElementById("welcome").innerHTML = '<h2 class="text-center"> Welcome ' + user.displayName + ' to D2D</h2>';
+        docRef.get().then(function(doc) {
+          if (doc.exists) {
+            console.log("Document data:", doc.data());
+            const uData = doc.data();
+            // document.getElementById("hello").innerHTML = uData.plan;
+            var data = [{
+              x: ['calories', 'protein', 'carbs', 'fat'],
+              y: [uData.calories, uData.protein, uData.carbs, uData.fat],
+              type: 'bar'
+            }];
+            Plotly.newPlot('macroPlot', data, {},
+            {showSendToCloud:true});
+          } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+          }
+          }).catch(function(error) {
+            console.log("Error getting document:", error);
+          });
       } else {
         console.log("no user signed in");
       }
     });
     </script>
+    <div id="welcome"></div>
+    <!-- <h2>Hello, your plan is <span id="hello"></span> </h2> -->
+    <div class="row pt-2">
+      <div class="col-md-4">
+        <form class="px-3">
+          <div class="form-group">
+            <label for="calories">Calories</label>
+            <input type="number" class="form-control" id="calories" min="0">
+          </div>
+          <div class="form-group">
+            <label for="protein">Protein</label>
+            <input type="number" class="form-control" id="protein" min="0">
+          </div>
+          <div class="form-group">
+            <label for="carbs">Carbs</label>
+            <input type="number" class="form-control" id="carbs" min="0">
+          </div>
+          <div class="form-group">
+            <label for="fat">Fat</label>
+            <input type="number" class="form-control" id="fat" min="0">
+          </div>
+          <button type="submit" class="btn btn-primary mt-1" id="submit">Submit</button>
+        </form>
+      </div>
+      <!-- Submission script -->
+      <script>
+        var firestore = firebase.firestore();
+        // var user = firebase.auth().currentUser;
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+            // User is signed in.
+            const docRef = firestore.collection("Users").doc(user.uid);
+            const submitButton = document.querySelector("#submit");
+            const inputCal = document.querySelector("#calories");
+            const inputCar = document.querySelector("#carbs");
+            const inputPro = document.querySelector("#protein");
+            const inputFat = document.querySelector("#fat");
+
+            var today = new Date();
+            today.setHours(0);
+            today.setMinutes(0);
+            today.setSeconds(0);
+            today.setMilliseconds(0);
+            console.log("today: ", today);
+
+            var todayTimestamp = firebase.firestore.Timestamp.fromDate(today);
+            submitButton.addEventListener("click", function() {
+              docRef.get().then(function(doc) {
+              if (doc.exists) {
+                  console.log("Document data:", doc.data());
+                  if(todayTimestamp > doc.data().lastInput.seconds) {
+                    docRef.update({
+                      calories: 0,
+                      carbs: 0,
+                      fat: 0,
+                      protein: 0,
+                      lastInput: todayTimestamp
+                    })
+                    .then(function() {
+                        console.log("Document successfully updated!");
+                      })
+                      .catch(function(error) {
+                        // The document probably doesn't exist.
+                        console.error("Error updating document: ", error);
+                      });
+                  }
+              } else {
+                  // doc.data() will be undefined in this case
+                  console.log("No such document!");
+              }
+              }).catch(function(error) {
+                console.log("Error getting document:", error);
+              });
+              docRef.update({
+                calories: firebase.firestore.FieldValue.increment(parseInt(inputCal.value, 10)),
+                carbs: firebase.firestore.FieldValue.increment(parseInt(inputCar.value, 10)),
+                fat: firebase.firestore.FieldValue.increment(parseInt(inputFat.value, 10)),
+                protein: firebase.firestore.FieldValue.increment(parseInt(inputPro.value, 10))
+                // lastInput: firebase.firestore.Timestamp.now()
+              })
+              .then(function() {
+                  console.log("Document successfully updated!");
+                })
+                .catch(function(error) {
+                  // The document probably doesn't exist.
+                  console.error("Error updating document: ", error);
+                });
+            })
+          } else {
+            // No user is signed in.
+            console.log("No user");
+          }
+        });
+
+
+      </script>
+      <div class="col-md-8">
+        <div class="" id="macroPlot">
+
+        </div>
+        <!-- Displaying script -->
+        <script>
+          var data = [{
+            x: ['calories', 'protein', 'carbs', 'fat'],
+            y: [20, 14, 23, 21],
+            type: 'bar'
+          }];
+          Plotly.newPlot('macroPlot', data, {},
+          {showSendToCloud:true});
+        </script>
+      </div>
+    </div>
   </body>
 </html>
