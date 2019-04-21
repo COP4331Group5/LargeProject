@@ -33,6 +33,37 @@
       if(user) {
         var firestore = firebase.firestore();
         const docRef = firestore.collection("Users").doc(user.uid);
+
+
+        var database = firebase.database();
+
+/*        FakeAuthClient.UserProperty = {
+            DISPLAY_NAME: 'displayName',
+            EMAIL: 'email',
+            EMAIL_VERIFIED: 'emailVerified',
+            IS_ANONYMOUS: 'isAnonymous',
+            PHONE_NUMBER: 'phoneNumber',
+            PHOTO_URL: 'photoURL',
+            PROVIDER_DATA: 'providerData',
+            PROVIDER_ID: 'providerId',
+            REFRESH_TOKEN: 'refreshToken',
+            UID: 'uid'
+        };
+*/
+        // Create simple user from info passes from firebase auth
+        function writeUserdata(userID, name, email) {
+            database.ref('Users/' + userID).set({
+                username: name,
+                email: email
+                // Shouldn't have to store passwords as firebase auth handles everything, including salts and hashes
+                // password: password
+            });
+        }
+
+        // Call writeUserdata function and pass arguments from auth to write to database
+        writeUserdata(user.uid, user.displayName, user.email);
+
+        
         document.getElementById("welcome").innerHTML = '<h2 class="text-center"> Welcome ' + user.displayName + ' to D2D</h2>';
         docRef.get().then(function(doc) {
           if (doc.exists) {
