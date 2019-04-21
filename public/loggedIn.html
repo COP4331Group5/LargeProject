@@ -46,6 +46,7 @@
             }];
             Plotly.newPlot('macroPlot', data, {},
             {showSendToCloud:true});
+
           } else {
             // doc.data() will be undefined in this case
             console.log("No such document!");
@@ -56,6 +57,7 @@
       } else {
         console.log("no user signed in");
       }
+
     });
     </script>
     <div id="welcome"></div>
@@ -155,19 +157,7 @@
 
       </script>
       <div class="col-md-8">
-        <div class="" id="macroPlot">
-
-        </div>
-        <!-- Displaying script -->
-        <script>
-          var data = [{
-            x: ['calories', 'protein', 'carbs', 'fat'],
-            y: [20, 14, 23, 21],
-            type: 'bar'
-          }];
-          Plotly.newPlot('macroPlot', data, {},
-          {showSendToCloud:true});
-        </script>
+        <div class="" id="macroPlot"></div>
       </div>
     </div>
   </body>
