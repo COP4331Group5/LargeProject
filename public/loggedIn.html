@@ -27,15 +27,32 @@
       <a class="navbar-brand pl-4" href="/">D2D</a>
       <a class="nav-link" href="#" download>Download Link</a>
     </nav>
+
     <!-- firebase.auth().signOut(); to sign out-->
     <script>
+    // TODO: Create document for new users with zeroed out data
     firebase.auth().onAuthStateChanged(function(user) {
       if(user) {
         var firestore = firebase.firestore();
         const docRef = firestore.collection("Users").doc(user.uid);
+        docRef.get().then(function(doc) {
+          if (doc.exists) {
+            console.log("Document data:", doc.data());
+          } else {
+        // doc.data() will be undefined in this case
+          firestore.collection("Users").doc(user.uid).set({
+            calories: 0,
+            carbs: 0,
+            fat: 0,
+            protein: 0
+          })
+          console.log("No such document!");
+        }
+      }).catch(function(error) {
+        console.log("Error getting document:", error);
+      });
 
-
-        var database = firebase.database();
+        // var database = firebase.database();
 
 /*        FakeAuthClient.UserProperty = {
             DISPLAY_NAME: 'displayName',
@@ -51,25 +68,25 @@
         };
 */
         // Create simple user from info passes from firebase auth
-        function writeUserdata(userID, name, email) {
-            database.ref('Users/' + userID).set({
-                username: name,
-                email: email
-                // Shouldn't have to store passwords as firebase auth handles everything, including salts and hashes
-                // password: password
-            });
-        }
+        // function writeUserdata(userID, name, email) {
+        //     database.ref('Users/' + userID).set({
+        //         username: name,
+        //         email: email
+        //         // Shouldn't have to store passwords as firebase auth handles everything, including salts and hashes
+        //         // password: password
+        //     });
+        // }
 
         // Call writeUserdata function and pass arguments from auth to write to database
-        writeUserdata(user.uid, user.displayName, user.email);
+        // writeUserdata(user.uid, user.displayName, user.email);
 
-        
+
         document.getElementById("welcome").innerHTML = '<h2 class="text-center"> Welcome ' + user.displayName + ' to D2D</h2>';
         docRef.get().then(function(doc) {
           if (doc.exists) {
             console.log("Document data:", doc.data());
             const uData = doc.data();
-            // document.getElementById("hello").innerHTML = uData.plan;
+            // TODO: add more colors to the different bars
             var data = [{
               x: ['calories', 'protein', 'carbs', 'fat'],
               y: [uData.calories, uData.protein, uData.carbs, uData.fat],
@@ -112,7 +129,9 @@
             <label for="fat">Fat</label>
             <input type="number" class="form-control" id="fat" min="0">
           </div>
-          <button type="submit" class="btn btn-primary mt-1" id="submit">Submit</button>
+          <!-- <button type="submit" class="btn btn-primary mt-1" id="submit">Submit</button> -->
+          <button class="btn btn-primary mt-1" id="submit">Submit</button>
+
         </form>
       </div>
       <!-- Submission script -->
@@ -122,12 +141,7 @@
         firebase.auth().onAuthStateChanged(function(user) {
           if (user) {
             // User is signed in.
-            const docRef = firestore.collection("Users").doc(user.uid);
-            const submitButton = document.querySelector("#submit");
-            const inputCal = document.querySelector("#calories");
-            const inputCar = document.querySelector("#carbs");
-            const inputPro = document.querySelector("#protein");
-            const inputFat = document.querySelector("#fat");
+
 
             var today = new Date();
             today.setHours(0);
@@ -135,41 +149,26 @@
             today.setSeconds(0);
             today.setMilliseconds(0);
             console.log("today: ", today);
+            const submitButton = document.querySelector("#submit");
 
             var todayTimestamp = firebase.firestore.Timestamp.fromDate(today);
             submitButton.addEventListener("click", function() {
-              docRef.get().then(function(doc) {
-              if (doc.exists) {
-                  console.log("Document data:", doc.data());
-                  if(todayTimestamp > doc.data().lastInput.seconds) {
-                    docRef.update({
-                      calories: 0,
-                      carbs: 0,
-                      fat: 0,
-                      protein: 0,
-                      lastInput: todayTimestamp
-                    })
-                    .then(function() {
-                        console.log("Document successfully updated!");
-                      })
-                      .catch(function(error) {
-                        // The document probably doesn't exist.
-                        console.error("Error updating document: ", error);
-                      });
-                  }
-              } else {
-                  // doc.data() will be undefined in this case
-                  console.log("No such document!");
-              }
-              }).catch(function(error) {
-                console.log("Error getting document:", error);
-              });
+              const docRef = firestore.collection("Users").doc(user.uid);
+              const inputCal = document.querySelector("#calories");
+              const inputCar = document.querySelector("#carbs");
+              const inputPro = document.querySelector("#protein");
+              const inputFat = document.querySelector("#fat");
+
+              var cals = parseInt(inputCal.value, 10);
+              var cars = parseInt(inputCar.value, 10);
+              var fats = parseInt(inputFat.value, 10);
+              var pros = parseInt(inputPro.value, 10);
+              console.log("Finna update");
               docRef.update({
-                calories: firebase.firestore.FieldValue.increment(parseInt(inputCal.value, 10)),
-                carbs: firebase.firestore.FieldValue.increment(parseInt(inputCar.value, 10)),
-                fat: firebase.firestore.FieldValue.increment(parseInt(inputFat.value, 10)),
-                protein: firebase.firestore.FieldValue.increment(parseInt(inputPro.value, 10))
-                // lastInput: firebase.firestore.Timestamp.now()
+                calories: firebase.firestore.FieldValue.increment(cals),
+                carbs: firebase.firestore.FieldValue.increment(cars),
+                fat: firebase.firestore.FieldValue.increment(fats),
+                protein: firebase.firestore.FieldValue.increment(pros)
               })
               .then(function() {
                   console.log("Document successfully updated!");
@@ -178,7 +177,7 @@
                   // The document probably doesn't exist.
                   console.error("Error updating document: ", error);
                 });
-            })
+            });
           } else {
             // No user is signed in.
             console.log("No user");
