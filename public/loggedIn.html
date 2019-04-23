@@ -53,54 +53,14 @@
         console.log("Error getting document:", error);
       });
 
-        // var database = firebase.database();
-
-/*        FakeAuthClient.UserProperty = {
-            DISPLAY_NAME: 'displayName',
-            EMAIL: 'email',
-            EMAIL_VERIFIED: 'emailVerified',
-            IS_ANONYMOUS: 'isAnonymous',
-            PHONE_NUMBER: 'phoneNumber',
-            PHOTO_URL: 'photoURL',
-            PROVIDER_DATA: 'providerData',
-            PROVIDER_ID: 'providerId',
-            REFRESH_TOKEN: 'refreshToken',
-            UID: 'uid'
-        };
-*/
-        // Create simple user from info passes from firebase auth
-        // function writeUserdata(userID, name, email) {
-        //     database.ref('Users/' + userID).set({
-        //         username: name,
-        //         email: email
-        //         // Shouldn't have to store passwords as firebase auth handles everything, including salts and hashes
-        //         // password: password
-        //     });
-        // }
-
-        // Call writeUserdata function and pass arguments from auth to write to database
-        // writeUserdata(user.uid, user.displayName, user.email);
-
-
         document.getElementById("welcome").innerHTML = '<h2 class="text-center"> Welcome ' + user.displayName + ' to D2D</h2>';
         docRef.get().then(function(doc) {
           if (doc.exists) {
             console.log("Document data:", doc.data());
             const uData = doc.data();
-            // TODO: add more colors to the different bars
-            var trace = {
-              x: ['calories', 'protein', 'carbs', 'fat'],
-              y: [uData.calories, uData.protein, uData.carbs, uData.fat],
-              marker:{
-                color: ['rgba(20,204,20,1)', 'rgba(222,45,38,1)',
-                        'rgba(20,20,204,1)', 'rgba(255,255,0,1)']
-               },
-               type: 'bar'
-            };
-            var data = [trace];
-            // Plotly.newPlot('macroPlot', data, {});
             var calVal, proVal, carVal, fatVal;
-            return firebase.database().ref('Users/Adam/NutritionProgram').once('value').then(function(snapshot) {
+            var nutProgRef = firebase.database().ref('Users/Adam/NutritionProgram');
+            nutProgRef.on('value', function(snapshot) {
               calVal = snapshot.val().calories;
               proVal = snapshot.val().protein;
               carVal = snapshot.val().carbs;
@@ -132,7 +92,7 @@
     <!-- <h2>Hello, your plan is <span id="hello"></span> </h2> -->
     <div class="row pt-2">
       <div class="col-md-4">
-        <form class="px-3">
+        <form class="px-3" onsubmit="return false">
           <div class="form-group">
             <label for="calories">Calories</label>
             <input type="number" class="form-control" id="calories" min="0">
@@ -161,17 +121,8 @@
         firebase.auth().onAuthStateChanged(function(user) {
           if (user) {
             // User is signed in.
-
-
-            var today = new Date();
-            today.setHours(0);
-            today.setMinutes(0);
-            today.setSeconds(0);
-            today.setMilliseconds(0);
-            console.log("today: ", today);
             const submitButton = document.querySelector("#submit");
 
-            var todayTimestamp = firebase.firestore.Timestamp.fromDate(today);
             submitButton.addEventListener("click", function() {
               const docRef = firestore.collection("Users").doc(user.uid);
               const inputCal = document.querySelector("#calories");
@@ -180,23 +131,32 @@
               const inputFat = document.querySelector("#fat");
 
               var cals = parseInt(inputCal.value, 10);
+              document.getElementById("calories").value = '';
               var cars = parseInt(inputCar.value, 10);
+              document.getElementById("carbs").value = '';
               var fats = parseInt(inputFat.value, 10);
+              document.getElementById("fat").value = '';
               var pros = parseInt(inputPro.value, 10);
+              document.getElementById("protein").value = '';
+
               console.log("Finna update");
-              docRef.update({
-                calories: firebase.firestore.FieldValue.increment(cals),
-                carbs: firebase.firestore.FieldValue.increment(cars),
-                fat: firebase.firestore.FieldValue.increment(fats),
-                protein: firebase.firestore.FieldValue.increment(pros)
-              })
-              .then(function() {
-                  console.log("Document successfully updated!");
-                })
-                .catch(function(error) {
-                  // The document probably doesn't exist.
-                  console.error("Error updating document: ", error);
-                });
+              var nutRef = firebase.database().ref('Users/Adam/NutritionProgram');
+              nutRef.transaction(function(currentNut) {
+                if(currentNut === null) {
+                  return {
+                    calories: 0,
+                    carbs: 0,
+                    fats: 0,
+                    protein: 0
+                  }
+                }
+                return {
+                    calories: currentNut.calories + cals,
+                    carbs: currentNut.carbs + cars,
+                    fats: currentNut.fats + fats,
+                    protein: currentNut.protein + pros
+                };
+              });
             });
           } else {
             // No user is signed in.
