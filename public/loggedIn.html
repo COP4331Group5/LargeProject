@@ -21,7 +21,6 @@
   firebase.initializeApp(config);
 </script>
 
-
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand pl-4" href="/">D2D</a>
@@ -34,54 +33,33 @@
     firebase.auth().onAuthStateChanged(function(user) {
       if(user) {
         var database = firebase.database();
-        var firestore = firebase.firestore();
-        const docRef = firestore.collection("Users").doc(user.uid);
-        docRef.get().then(function(doc) {
-          if (doc.exists) {
-            console.log("Document data:", doc.data());
-          } else {
-        // doc.data() will be undefined in this case
-          firestore.collection("Users").doc(user.uid).set({
-            calories: 0,
-            carbs: 0,
-            fat: 0,
-            protein: 0
-          })
-          console.log("No such document!");
-        }
-      }).catch(function(error) {
-        console.log("Error getting document:", error);
-      });
-
         document.getElementById("welcome").innerHTML = '<h2 class="text-center"> Welcome ' + user.displayName + ' to D2D</h2>';
-        docRef.get().then(function(doc) {
-          if (doc.exists) {
-            console.log("Document data:", doc.data());
-            const uData = doc.data();
-            var calVal, proVal, carVal, fatVal;
-            var nutProgRef = firebase.database().ref('Users/Adam/NutritionProgram');
-            nutProgRef.on('value', function(snapshot) {
-              calVal = snapshot.val().calories;
-              proVal = snapshot.val().protein;
-              carVal = snapshot.val().carbs;
-              fatVal = snapshot.val().fats;
-              document.getElementById("calBar").style.width = (100/3) + '%';
-              document.getElementById("calBar").style.width = (calVal/2) + '%';
-              document.getElementById("calBar").innerHTML = "Calories: " + calVal;
-              document.getElementById("proBar").style.width = (proVal/3) + '%';
-              document.getElementById("proBar").innerHTML = "Protein: " + proVal;
-              document.getElementById("carBar").style.width = (carVal/3) + '%';
-              document.getElementById("carBar").innerHTML = "Carbs: " + carVal;
-              document.getElementById("fatBar").style.width = (fatVal/2) + '%';
-              document.getElementById("fatBar").innerHTML = "Fat: " + fatVal;
+        var calVal, proVal, carVal, fatVal;
+        var nutProgRef = firebase.database().ref('Users/' + user.uid + '/NutritionProgram');
+        nutProgRef.on('value', function(snapshot) {
+          if(!snapshot.val()) {
+            nutProgRef.set({
+              calories: 0,
+              carbs: 0,
+              fats: 0,
+              protein: 0
             });
           } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
+            calVal = snapshot.val().calories;
+            proVal = snapshot.val().protein;
+            carVal = snapshot.val().carbs;
+            fatVal = snapshot.val().fats;
+            document.getElementById("calBar").style.width = (100/3) + '%';
+            document.getElementById("calBar").style.width = (calVal/2) + '%';
+            document.getElementById("calBar").innerHTML = "Calories: " + calVal;
+            document.getElementById("proBar").style.width = (proVal/3) + '%';
+            document.getElementById("proBar").innerHTML = "Protein: " + proVal;
+            document.getElementById("carBar").style.width = (carVal/3) + '%';
+            document.getElementById("carBar").innerHTML = "Carbs: " + carVal;
+            document.getElementById("fatBar").style.width = (fatVal/2) + '%';
+            document.getElementById("fatBar").innerHTML = "Fat: " + fatVal;
           }
-          }).catch(function(error) {
-            console.log("Error getting document:", error);
-          });
+        });
       } else {
         console.log("no user signed in");
       }
@@ -116,15 +94,12 @@
       </div>
       <!-- Submission script -->
       <script>
-        var firestore = firebase.firestore();
-        // var user = firebase.auth().currentUser;
         firebase.auth().onAuthStateChanged(function(user) {
           if (user) {
             // User is signed in.
             const submitButton = document.querySelector("#submit");
 
             submitButton.addEventListener("click", function() {
-              const docRef = firestore.collection("Users").doc(user.uid);
               const inputCal = document.querySelector("#calories");
               const inputCar = document.querySelector("#carbs");
               const inputPro = document.querySelector("#protein");
@@ -140,16 +115,8 @@
               document.getElementById("protein").value = '';
 
               console.log("Finna update");
-              var nutRef = firebase.database().ref('Users/Adam/NutritionProgram');
+              var nutRef = firebase.database().ref('Users/'+user.uid+'/NutritionProgram');
               nutRef.transaction(function(currentNut) {
-                if(currentNut === null) {
-                  return {
-                    calories: 0,
-                    carbs: 0,
-                    fats: 0,
-                    protein: 0
-                  }
-                }
                 return {
                     calories: currentNut.calories + cals,
                     carbs: currentNut.carbs + cars,
