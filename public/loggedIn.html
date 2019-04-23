@@ -33,6 +33,7 @@
     // TODO: Create document for new users with zeroed out data
     firebase.auth().onAuthStateChanged(function(user) {
       if(user) {
+        var database = firebase.database();
         var firestore = firebase.firestore();
         const docRef = firestore.collection("Users").doc(user.uid);
         docRef.get().then(function(doc) {
@@ -87,14 +88,33 @@
             console.log("Document data:", doc.data());
             const uData = doc.data();
             // TODO: add more colors to the different bars
-            var data = [{
+            var trace = {
               x: ['calories', 'protein', 'carbs', 'fat'],
               y: [uData.calories, uData.protein, uData.carbs, uData.fat],
-              type: 'bar'
-            }];
-            Plotly.newPlot('macroPlot', data, {},
-            {showSendToCloud:true});
-
+              marker:{
+                color: ['rgba(20,204,20,1)', 'rgba(222,45,38,1)',
+                        'rgba(20,20,204,1)', 'rgba(255,255,0,1)']
+               },
+               type: 'bar'
+            };
+            var data = [trace];
+            // Plotly.newPlot('macroPlot', data, {});
+            var calVal, proVal, carVal, fatVal;
+            return firebase.database().ref('Users/Adam/NutritionProgram').once('value').then(function(snapshot) {
+              calVal = snapshot.val().calories;
+              proVal = snapshot.val().protein;
+              carVal = snapshot.val().carbs;
+              fatVal = snapshot.val().fats;
+              document.getElementById("calBar").style.width = (100/3) + '%';
+              document.getElementById("calBar").style.width = (calVal/2) + '%';
+              document.getElementById("calBar").innerHTML = "Calories: " + calVal;
+              document.getElementById("proBar").style.width = (proVal/3) + '%';
+              document.getElementById("proBar").innerHTML = "Protein: " + proVal;
+              document.getElementById("carBar").style.width = (carVal/3) + '%';
+              document.getElementById("carBar").innerHTML = "Carbs: " + carVal;
+              document.getElementById("fatBar").style.width = (fatVal/2) + '%';
+              document.getElementById("fatBar").innerHTML = "Fat: " + fatVal;
+            });
           } else {
             // doc.data() will be undefined in this case
             console.log("No such document!");
@@ -187,7 +207,23 @@
 
       </script>
       <div class="col-md-8">
-        <div class="" id="macroPlot"></div>
+        <div id="macroPlot"></div>
+
+        <div class="container">
+          <div class="progress my-4" style="height: 50px">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 20%" id="calBar">Calories</div>
+          </div>
+          <div class="progress my-4" style="height: 50px">
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: 20%" id="proBar">Protein</div>
+          </div>
+          <div class="progress my-4" style="height: 50px">
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 20%" id="carBar">Carbs</div>
+          </div>
+          <div class="progress my-4" style="height: 50px">
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-dark" role="progressbar" style="width: 20%" id="fatBar">Fat</div>
+          </div>
+
+        </div>
       </div>
     </div>
   </body>
