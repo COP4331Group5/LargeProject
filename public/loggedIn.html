@@ -87,8 +87,8 @@
             <label for="fat">Fat</label>
             <input type="number" class="form-control" id="fat" min="0">
           </div>
-          <!-- <button type="submit" class="btn btn-primary mt-1" id="submit">Submit</button> -->
-          <button class="btn btn-primary mt-1" id="submit">Submit</button>
+          <button class="btn btn-primary mt-1 mr-4" id="submit">Submit</button>
+          <button class="btn btn-danger mt-1 ml-4" type="button" name="newDay" id="newDay">New Day</button>
 
         </form>
       </div>
@@ -98,7 +98,7 @@
           if (user) {
             // User is signed in.
             const submitButton = document.querySelector("#submit");
-
+            const newDayButton = document.querySelector("#newDay");
             submitButton.addEventListener("click", function() {
               const inputCal = document.querySelector("#calories");
               const inputCar = document.querySelector("#carbs");
@@ -115,7 +115,7 @@
               document.getElementById("protein").value = '';
 
               console.log("Finna update");
-              var nutRef = firebase.database().ref('Users/'+user.uid+'/NutritionProgram');
+              var nutRef = firebase.database().ref('Users/'+ user.uid +'/NutritionProgram');
               nutRef.transaction(function(currentNut) {
                 return {
                     calories: currentNut.calories + cals,
@@ -123,6 +123,16 @@
                     fats: currentNut.fats + fats,
                     protein: currentNut.protein + pros
                 };
+              });
+            });
+
+            newDayButton.addEventListener("click", function() {
+              var nutRef = firebase.database().ref('Users/' + user.uid + '/NutritionProgram');
+              nutRef.set({
+                calories: 0,
+                carbs: 0,
+                fats: 0,
+                protein: 0
               });
             });
           } else {
