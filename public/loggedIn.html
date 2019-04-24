@@ -33,7 +33,7 @@
     firebase.auth().onAuthStateChanged(function(user) {
       if(user) {
         var database = firebase.database();
-        document.getElementById("welcome").innerHTML = '<h2 class="text-center"> Welcome ' + user.displayName + ' to D2D</h2>';
+        document.getElementById("welcome").innerHTML = '<h2 class="text-center pt-3"> Welcome ' + user.displayName + ' to D2D</h2>';
         var calVal, proVal, carVal, fatVal;
         var nutProgRef = firebase.database().ref('Users/' + user.uid + '/NutritionProgram');
         nutProgRef.on('value', function(snapshot) {
@@ -49,14 +49,13 @@
             proVal = snapshot.val().protein;
             carVal = snapshot.val().carbs;
             fatVal = snapshot.val().fats;
-            document.getElementById("calBar").style.width = (100/3) + '%';
-            document.getElementById("calBar").style.width = (calVal/2) + '%';
+            document.getElementById("calBar").style.width = (calVal/20) + '%';
             document.getElementById("calBar").innerHTML = "Calories: " + calVal;
-            document.getElementById("proBar").style.width = (proVal/3) + '%';
+            document.getElementById("proBar").style.width = (proVal/.5) + '%';
             document.getElementById("proBar").innerHTML = "Protein: " + proVal;
             document.getElementById("carBar").style.width = (carVal/3) + '%';
             document.getElementById("carBar").innerHTML = "Carbs: " + carVal;
-            document.getElementById("fatBar").style.width = (fatVal/2) + '%';
+            document.getElementById("fatBar").style.width = (fatVal/.65) + '%';
             document.getElementById("fatBar").innerHTML = "Fat: " + fatVal;
           }
         });
@@ -67,7 +66,6 @@
     });
     </script>
     <div id="welcome"></div>
-    <!-- <h2>Hello, your plan is <span id="hello"></span> </h2> -->
     <div class="row pt-2">
       <div class="col-md-4">
         <form class="px-3" onsubmit="return false">
@@ -76,19 +74,19 @@
             <input type="number" class="form-control" id="calories" min="0">
           </div>
           <div class="form-group">
-            <label for="protein">Protein</label>
+            <label for="protein">Protein (g)</label>
             <input type="number" class="form-control" id="protein" min="0">
           </div>
           <div class="form-group">
-            <label for="carbs">Carbs</label>
+            <label for="carbs">Carbs (g)</label>
             <input type="number" class="form-control" id="carbs" min="0">
           </div>
           <div class="form-group">
-            <label for="fat">Fat</label>
+            <label for="fat">Fat (g)</label>
             <input type="number" class="form-control" id="fat" min="0">
           </div>
-          <button class="btn btn-primary mt-1 mr-4" id="submit">Submit</button>
-          <button class="btn btn-danger mt-1 ml-4" type="button" name="newDay" id="newDay">New Day</button>
+          <button class="btn btn-primary" id="submit">Submit</button>
+          <button class="btn btn-danger float-right" type="button" name="newDay" id="newDay">New Day</button>
 
         </form>
       </div>
