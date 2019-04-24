@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <title>Welcome</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   </head>
 
 <script src="https://www.gstatic.com/firebasejs/5.9.2/firebase.js"></script>
@@ -65,10 +64,12 @@
 
     });
     </script>
-    <div id="welcome"></div>
-    <div class="row pt-2">
-      <div class="col-md-4">
-        <form class="px-3" onsubmit="return false">
+    <div class="container">
+      <div id="welcome"></div>
+      <div class="row">
+
+        <div class="col-md-4">
+          <form class="px-3" onsubmit="return false">
           <div class="form-group">
             <label for="calories">Calories</label>
             <input type="number" class="form-control" id="calories" min="0">
@@ -87,78 +88,72 @@
           </div>
           <button class="btn btn-primary" id="submit">Submit</button>
           <button class="btn btn-danger float-right" type="button" name="newDay" id="newDay">New Day</button>
-
         </form>
-      </div>
-      <!-- Submission script -->
-      <script>
-        firebase.auth().onAuthStateChanged(function(user) {
-          if (user) {
-            // User is signed in.
-            const submitButton = document.querySelector("#submit");
-            const newDayButton = document.querySelector("#newDay");
-            submitButton.addEventListener("click", function() {
-              const inputCal = document.querySelector("#calories");
-              const inputCar = document.querySelector("#carbs");
-              const inputPro = document.querySelector("#protein");
-              const inputFat = document.querySelector("#fat");
-
-              var cals = parseInt(inputCal.value, 10);
-              document.getElementById("calories").value = '';
-              var cars = parseInt(inputCar.value, 10);
-              document.getElementById("carbs").value = '';
-              var fats = parseInt(inputFat.value, 10);
-              document.getElementById("fat").value = '';
-              var pros = parseInt(inputPro.value, 10);
-              document.getElementById("protein").value = '';
-
-              console.log("Finna update");
-              var nutRef = firebase.database().ref('Users/'+ user.uid +'/NutritionProgram');
-              nutRef.transaction(function(currentNut) {
-                return {
-                    calories: currentNut.calories + cals,
-                    carbs: currentNut.carbs + cars,
-                    fats: currentNut.fats + fats,
-                    protein: currentNut.protein + pros
-                };
-              });
-            });
-
-            newDayButton.addEventListener("click", function() {
-              var nutRef = firebase.database().ref('Users/' + user.uid + '/NutritionProgram');
-              nutRef.set({
-                calories: 0,
-                carbs: 0,
-                fats: 0,
-                protein: 0
-              });
-            });
-          } else {
-            // No user is signed in.
-            console.log("No user");
-          }
-        });
-
-
-      </script>
-      <div class="col-md-8">
-        <div id="macroPlot"></div>
-
-        <div class="container">
-          <div class="progress my-4" style="height: 50px">
-            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 20%" id="calBar">Calories</div>
-          </div>
-          <div class="progress my-4" style="height: 50px">
-            <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: 20%" id="proBar">Protein</div>
-          </div>
-          <div class="progress my-4" style="height: 50px">
-            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 20%" id="carBar">Carbs</div>
-          </div>
-          <div class="progress my-4" style="height: 50px">
-            <div class="progress-bar progress-bar-striped progress-bar-animated bg-dark" role="progressbar" style="width: 20%" id="fatBar">Fat</div>
-          </div>
-
         </div>
+      <!-- Submission script -->
+        <script>
+          firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+              // User is signed in.
+              const submitButton = document.querySelector("#submit");
+              const newDayButton = document.querySelector("#newDay");
+              submitButton.addEventListener("click", function() {
+                const inputCal = document.querySelector("#calories");
+                const inputCar = document.querySelector("#carbs");
+                const inputPro = document.querySelector("#protein");
+                const inputFat = document.querySelector("#fat");
+
+                var cals = parseInt(inputCal.value, 10);
+                document.getElementById("calories").value = '';
+                var cars = parseInt(inputCar.value, 10);
+                document.getElementById("carbs").value = '';
+                var fats = parseInt(inputFat.value, 10);
+                document.getElementById("fat").value = '';
+                var pros = parseInt(inputPro.value, 10);
+                document.getElementById("protein").value = '';
+
+                console.log("Finna update");
+                var nutRef = firebase.database().ref('Users/'+ user.uid +'/NutritionProgram');
+                nutRef.transaction(function(currentNut) {
+                  return {
+                      calories: currentNut.calories + cals,
+                      carbs: currentNut.carbs + cars,
+                      fats: currentNut.fats + fats,
+                      protein: currentNut.protein + pros
+                  };
+                });
+              });
+
+              newDayButton.addEventListener("click", function() {
+                var nutRef = firebase.database().ref('Users/' + user.uid + '/NutritionProgram');
+                nutRef.set({
+                  calories: 0,
+                  carbs: 0,
+                  fats: 0,
+                  protein: 0
+                });
+              });
+            } else {
+              // No user is signed in.
+              console.log("No user");
+            }
+          });
+        </script>
+        <div class="col-md-8">
+            <div class="progress my-4" style="height: 50px">
+              <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 20%" id="calBar">Calories</div>
+            </div>
+            <div class="progress my-4" style="height: 50px">
+              <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: 20%" id="proBar">Protein</div>
+            </div>
+            <div class="progress my-4" style="height: 50px">
+              <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 20%" id="carBar">Carbs</div>
+            </div>
+            <div class="progress my-4" style="height: 50px">
+              <div class="progress-bar progress-bar-striped progress-bar-animated bg-dark" role="progressbar" style="width: 20%" id="fatBar">Fat</div>
+            </div>
+        </div>
+
       </div>
     </div>
 
