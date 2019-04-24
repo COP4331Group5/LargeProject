@@ -24,6 +24,9 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand pl-4" href="/">D2D</a>
       <a class="nav-link" href="#" download>Download Link</a>
+      <div class="navbar-nav ml-auto">
+        <button class="btn btn-danger" type="button" name="button" id="logOut">Log Out</button>
+      </div>
     </nav>
 
     <!-- firebase.auth().signOut(); to sign out-->
@@ -112,31 +115,32 @@
               // User is signed in.
                 const submitButton = document.querySelector("#submit");
                 const newDayButton = document.querySelector("#newDay");
+                const logOutButton = document.querySelector("#logOut");
                 submitButton.addEventListener("click", function() {
-                const inputCal = document.querySelector("#calories");
-                const inputCar = document.querySelector("#carbs");
-                const inputPro = document.querySelector("#protein");
-                const inputFat = document.querySelector("#fat");
+                  const inputCal = document.querySelector("#calories");
+                  const inputCar = document.querySelector("#carbs");
+                  const inputPro = document.querySelector("#protein");
+                  const inputFat = document.querySelector("#fat");
 
-                var cals = parseInt(inputCal.value, 10);
-                document.getElementById("calories").value = '0';
-                var cars = parseInt(inputCar.value, 10);
-                document.getElementById("carbs").value = '0';
-                var fats = parseInt(inputFat.value, 10);
-                document.getElementById("fat").value = '0';
-                var pros = parseInt(inputPro.value, 10);
-                document.getElementById("protein").value = '0';
+                  var cals = parseInt(inputCal.value, 10);
+                  document.getElementById("calories").value = '0';
+                  var cars = parseInt(inputCar.value, 10);
+                  document.getElementById("carbs").value = '0';
+                  var fats = parseInt(inputFat.value, 10);
+                  document.getElementById("fat").value = '0';
+                  var pros = parseInt(inputPro.value, 10);
+                  document.getElementById("protein").value = '0';
 
-                console.log("Finna update");
-                var nutRef = firebase.database().ref('Users/'+ user.uid +'/NutritionProgram');
-                nutRef.transaction(function(currentNut) {
-                  return {
-                      calories: currentNut.calories + cals,
-                      carbs: currentNut.carbs + cars,
-                      fats: currentNut.fats + fats,
-                      protein: currentNut.protein + pros
-                  };
-                });
+                  console.log("Finna update");
+                  var nutRef = firebase.database().ref('Users/'+ user.uid +'/NutritionProgram');
+                  nutRef.transaction(function(currentNut) {
+                    return {
+                        calories: currentNut.calories + cals,
+                        carbs: currentNut.carbs + cars,
+                        fats: currentNut.fats + fats,
+                        protein: currentNut.protein + pros
+                    };
+                  });
               });
 
               newDayButton.addEventListener("click", function() {
@@ -155,6 +159,10 @@
                 document.getElementById("fatBar").classList.add('bg-dark');
                 document.getElementById("fatBar").classList.remove('bg-danger');
               });
+              logOutButton.addEventListener("click", function() {
+                firebase.auth().signOut();
+                window.location.href = "/";
+              })
             } else {
               // No user is signed in.
               console.log("No user");
