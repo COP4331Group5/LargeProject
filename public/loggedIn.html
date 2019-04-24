@@ -50,12 +50,27 @@
             fatVal = snapshot.val().fats;
             document.getElementById("calBar").style.width = (calVal/20) + '%';
             document.getElementById("calBar").innerHTML = "Calories: " + calVal;
+            if((calVal/20) > 100) {
+              document.getElementById("calBar").classList.add('bg-danger');
+            }
             document.getElementById("proBar").style.width = (proVal/.5) + '%';
             document.getElementById("proBar").innerHTML = "Protein: " + proVal;
+            if((proVal/.5) > 100) {
+              document.getElementById("proBar").classList.remove('bg-warning');
+              document.getElementById("proBar").classList.add('bg-danger');
+            }
             document.getElementById("carBar").style.width = (carVal/3) + '%';
             document.getElementById("carBar").innerHTML = "Carbs: " + carVal;
+            if((carVal/3) > 100) {
+              document.getElementById("carBar").classList.remove('bg-success');
+              document.getElementById("carBar").classList.add('bg-danger');
+            }
             document.getElementById("fatBar").style.width = (fatVal/.65) + '%';
             document.getElementById("fatBar").innerHTML = "Fat: " + fatVal;
+            if((fatVal/.65) > 100) {
+              document.getElementById("fatBar").classList.remove('bg-dark');
+              document.getElementById("fatBar").classList.add('bg-danger');
+            }
           }
         });
       } else {
@@ -95,9 +110,9 @@
           firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
               // User is signed in.
-              const submitButton = document.querySelector("#submit");
-              const newDayButton = document.querySelector("#newDay");
-              submitButton.addEventListener("click", function() {
+                const submitButton = document.querySelector("#submit");
+                const newDayButton = document.querySelector("#newDay");
+                submitButton.addEventListener("click", function() {
                 const inputCal = document.querySelector("#calories");
                 const inputCar = document.querySelector("#carbs");
                 const inputPro = document.querySelector("#protein");
@@ -132,6 +147,13 @@
                   fats: 0,
                   protein: 0
                 });
+                document.getElementById("calBar").classList.remove('bg-danger');
+                document.getElementById("proBar").classList.add('bg-warning');
+                document.getElementById("proBar").classList.remove('bg-danger');
+                document.getElementById("carBar").classList.add('bg-success');
+                document.getElementById("carBar").classList.remove('bg-danger');
+                document.getElementById("fatBar").classList.add('bg-dark');
+                document.getElementById("fatBar").classList.remove('bg-danger');
               });
             } else {
               // No user is signed in.
